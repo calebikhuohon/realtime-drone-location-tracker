@@ -1,21 +1,28 @@
 import app from './app';
-import {init} from  './socket';
+import { init } from './socket';
+import Drone from './drone';
 
 const port = 40001;
 
 app.set('port', port);
 const server = app.listen(app.get('port'), (err) => {
-    if(err) {
-        console.log(err);
-    }
+  if (err) {
+    console.log(err);
+  }
 
-    console.log(`server is listening on port ${port}`);
+  console.log(`server is listening on port ${port}`);
 });
 
 const io = init(server);
 
+// eslint-disable-next-line no-unused-vars
 io.on('connection', socket => {
-    console.log('client connected');
+  console.log('client connected');
 });
 
- 
+const connect = (config) => {
+  return Drone(config);
+};
+
+export { connect };
+

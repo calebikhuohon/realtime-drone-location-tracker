@@ -7,10 +7,10 @@ function parseDroneLocation (locationBuffer) {
 }
 
 function verifyCommand(command) {
-    return;
+  return;
 }
 
 export {
-    parseDroneLocation,
-    verifyCommand
-}
+  parseDroneLocation,
+  verifyCommand,
+};

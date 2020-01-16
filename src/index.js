@@ -1,7 +1,7 @@
 import app from './app';
-import webSocket from  './socket';
+import {init} from  './socket';
 
-const port = 4001;
+const port = 40001;
 
 app.set('port', port);
 const server = app.listen(app.get('port'), (err) => {
@@ -12,7 +12,7 @@ const server = app.listen(app.get('port'), (err) => {
     console.log(`server is listening on port ${port}`);
 });
 
-const io = webSocket.init(server);
+const io = init(server);
 
 io.on('connection', socket => {
     console.log('client connected');

@@ -1,19 +1,3 @@
-// import socketIO from 'socket.io';
-// import dgram from 'dgram';
-
-// const io = socketIO(https);
-
-// const PORT = 8889;
-// const drone = dgram.createSocket('udp4');
-// drone.bind(PORT);
-
-// drone.on('message', message => {
-//     console.log(message);
-//     io.sockets.emit('status', message.toString());
-// });
-
-// drone.send('location', PORT);
-
 import express from 'express';
 
 class App {

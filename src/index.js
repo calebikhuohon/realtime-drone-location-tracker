@@ -1,5 +1,5 @@
 import app from './app';
-import socketIO from 'socket.io';
+import webSocket from  './socket';
 
 const port = 4001;
 
@@ -12,9 +12,10 @@ const server = app.listen(app.get('port'), (err) => {
     console.log(`server is listening on port ${port}`);
 });
 
-const io = socketIO(server);
+const io = webSocket.init(server);
 
 io.on('connection', socket => {
     console.log('client connected');
 });
 
+ 

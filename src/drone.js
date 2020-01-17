@@ -2,15 +2,16 @@ import dgram from 'dgram';
 import assert from 'assert';
 
 import { getIO } from './socket';
-import { parseDroneLocation, verifyCommand } from './utility';
+import { parseDroneLocation } from './utility';
 
 
 class Drone {
   constructor({
     host,
-    port = '8889',
-    locationPort = '8890',
-    skipOk = false }) {
+    port ,
+    locationPort,
+    skipOk = false, 
+  }) {
     assert.equal(typeof host, 'string');
     assert.equal(typeof port, 'string');
     assert.equal(typeof locationPort, 'string');
@@ -29,7 +30,8 @@ class Drone {
     this.droneLocation.bind(this.LOCATION_PORT);
 
     this.droneLocation.on('message', locationBuffer => {
-      parseDroneLocation(locationBuffer);
+      const parsedLocation = parseDroneLocation(locationBuffer);
+      this.io.emit('parsedLocation', parsedLocation);
     });
 
     this.droneIO.on('message', (location) => {
@@ -49,6 +51,13 @@ class Drone {
 
       if (!skipOk) return this.io.emit('message', message);
     });
+
+    /**
+     * request drone location every 10ms
+     */
+    setInterval(() => {
+      this.send('location');
+    }, 10);
   }
 
   /**
@@ -56,7 +65,7 @@ class Drone {
      */
 
   send(command, force) {
-    const error = verifyCommand(command);
+    const error = assert.notEqual(command, 'location');
 
     return new Promise((resolve, reject) => {
       if (error && !force) return reject(error);

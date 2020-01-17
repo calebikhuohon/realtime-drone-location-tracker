@@ -52,7 +52,7 @@ class Drone {
       if (!skipOk) return this.io.emit('message', message);
     });
 
-    /**
+    /** 
      * request drone location every 10ms
      */
     setInterval(() => {

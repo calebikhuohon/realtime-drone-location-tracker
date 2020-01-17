@@ -15,14 +15,14 @@ const server = app.listen(app.get('port'), (err) => {
 
 const io = init(server);
 
+const connect = (config) => {
+  return new Drone(config);
+};
+
 // eslint-disable-next-line no-unused-vars
 io.on('connection', socket => {
   console.log('client connected');
 });
-
-const connect = (config) => {
-  return Drone(config);
-};
 
 export { connect };
 

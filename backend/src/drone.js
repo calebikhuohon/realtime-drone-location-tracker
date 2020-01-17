@@ -1,9 +1,10 @@
 import dgram from 'dgram';
 import assert from 'assert';
+import uuidv4 from 'uuid/v4';
+import EventEmitter from 'events';
 
 import { getIO } from './socket';
 import { parseDroneLocation } from './utility';
-
 
 class Drone {
   constructor({
@@ -25,52 +26,59 @@ class Drone {
     this.connected = false;
 
     this.io = getIO();
+    this.events = new EventEmitter();
 
     this.droneIO.bind(this.MAIN_PORT);
     this.droneLocation.bind(this.LOCATION_PORT);
 
     this.droneLocation.on('message', locationBuffer => {
       const parsedLocation = parseDroneLocation(locationBuffer);
+      parsedLocation.droneId = uuidv4().split('-').join('');
+
       this.io.emit('parsedLocation', parsedLocation);
     });
 
     this.droneIO.on('message', (location) => {
-      let message = Buffer.isBuffer(location) ? location.toString() : location;
+      location = Buffer.isBuffer(location) ? location.toString() : location;
 
-      if (message !== 'ok') {
+      if (location !== 'ok') {
                 
-        return this.io.emit('message', message);
+        return this.events.emit('message', location);
       }
 
-      this.io.emit('_ok');
+      this.events.emit('_ok');
 
       if (!this.connected) {
         this.connected = true;
-        this.io.emit('connection');
+        this.events.emit('connection');
       }
 
-      if (!skipOk) return this.io.emit('message', message);
+      if (!skipOk) return this.emit('location', location);
     });
 
+    
+    //minor delay so events can be attached first
+    setTimeout(this.send.bind(this, 'location'));
+
     /** 
-     * request drone location every 10ms
+     * request drone location every 50ms
      */
     setInterval(() => {
-      this.send('location');
-    }, 10);
+      this.send.bind(this, 'location');
+    },50);
   }
 
   /**
-     * send a command to get the drone location via UDP every 5-10ms
+     * send a command to get the drone's data via UDP every 5-10ms
      */
 
-  send(command, force) {
-    const error = assert.notEqual(command, 'location');
+  send(command) {
+    const error = assert.strictEqual(typeof command, 'string');
 
     return new Promise((resolve, reject) => {
-      if (error && !force) return reject(error);
+      if (error) return reject(error);
 
-      this.droneIO.send(command, 0, this.MAIN_PORT, this.HOST, this.events.emit.bind(this.events, 'send'));
+      this.droneIO.send(command, 0, command.length, this.MAIN_PORT, this.HOST, this.events.emit.bind(this.events, 'send'));
 
       //return location data immediately
       return resolve();
@@ -83,7 +91,7 @@ class Drone {
      * @param {Function} callback 
      */
   on(event, callback) {
-    this.io.on(event, callback);
+    this.events.on(event, callback);
   }
 }
 

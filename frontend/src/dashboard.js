@@ -3,11 +3,13 @@ import React, { Component } from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table';
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 
+import './dashboard.css';
 import { computeDistanceMovedByDrone, timeTakenByDrone } from './utility';
 
 export default class DashBoard extends Component {
     state = {
-        dataFromDrones: []
+        dataFromDrones: [],
+        staticDrones: []
     }
     componentDidMount() {
         const socket = openSocket('http://localhost:40001');
@@ -19,6 +21,8 @@ export default class DashBoard extends Component {
                     const timeTaken = timeTakenByDrone(droneCoordinateDiff, data.speed);
                     if (droneCoordinateDiff > 0.0001 && timeTaken > 10 * 1000) {
                         this.updateDroneData(data);
+                    } else {
+                        this.state.staticDrones.push(data);
                     }
                 } else {
                     this.state.dataFromDrones.push(data);
@@ -42,6 +46,14 @@ export default class DashBoard extends Component {
         });
     };
 
+    indicateStaticDrones() {
+        for (let item of this.state.staticDrones) {
+            if (this.getLocationDataItems('droneId').key === item.droneId) {
+                return 'table-selected';
+            } else return '';
+        }
+    }
+
     getLocationDataItems(keyPhrase) {
         for (let item of this.state.dataFromDrones) {
             if (typeof item !== 'object') {
@@ -50,7 +62,7 @@ export default class DashBoard extends Component {
 
             if (keyPhrase === 'droneId') {
                 return (
-                    <Td>
+                    <Td key={item.droneId}>
                         {item.droneId}
                     </Td>
                 );
@@ -60,21 +72,19 @@ export default class DashBoard extends Component {
                         {item.location[0]}
                     </Td>
                 );
-            } else if (keyPhrase === 'longitutde') {
+            } else if (keyPhrase === 'longitude') {
                 return (
                     <Td>
                         {item.location[1]}
                     </Td>
                 )
-            } else if (keyPhrase === 'speed'){
+            } else if (keyPhrase === 'speed') {
                 return (
                     <Td>
                         {item.speed}
                     </Td>
                 )
-            } else {
-                throw Error('invalid key phrase');
-            }
+            } 
 
         }
     }
@@ -91,19 +101,17 @@ export default class DashBoard extends Component {
                             <Th>Drone ID</Th>
                             <Th>Latitude</Th>
                             <Th>Longitude</Th>
+                            <Th>Speed</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
-                        <Tr>
+                        <Tr className={this.indicateStaticDrones()}>
                             {this.getLocationDataItems('droneId')}
-                        </Tr>
-                        <Tr>
+
                             {this.getLocationDataItems('latitude')}
-                        </Tr>
-                        <Tr>
+
                             {this.getLocationDataItems('longitude')}
-                        </Tr>
-                        <Tr>
+
                             {this.getLocationDataItems('speed')}
                         </Tr>
                     </Tbody>

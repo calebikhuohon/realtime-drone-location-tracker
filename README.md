@@ -31,3 +31,4 @@ drone.send('location');
 // attach a callback to a specific event
 drone.on(event, callback);
 
+```

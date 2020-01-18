@@ -59,3 +59,19 @@ drone.on(event, callback);
  * /
 
 ```
+---
+
+### Setup Procedure
+
+#### Production
+
+- Run `docker build .` in a bash terminal to create production build.
+- Run `docker run -p 8080:80 <ContainerID>` to map ports between the container and the browser.
+- Open `localhost:8080` in the browser.
+
+#### Development
+
+- Run `docker build -f Dockerfile.dev` in a bash terminal to create dev build.
+- Run `docker run -p 3001:3000 <ContainerID>` to create port mappings and execute the container.
+- Open `localhost:3001` in the browser.
+

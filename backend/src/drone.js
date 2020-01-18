@@ -53,7 +53,7 @@ class Drone {
         this.events.emit('connection');
       }
 
-      if (!skipOk) return this.emit('location', location);
+      if (!skipOk) return this.emit('message', location);
     });
 
     
@@ -69,11 +69,12 @@ class Drone {
   }
 
   /**
-     * send a command to get the drone's data via UDP every 5-10ms
+     * send a command to get the drone's data via UDP 
+     * @param {"location"} command
      */
 
   send(command) {
-    const error = assert.strictEqual(typeof command, 'string');
+    const error = assert.notStrictEqual(typeof command, 'string');
 
     return new Promise((resolve, reject) => {
       if (error) return reject(error);

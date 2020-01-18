@@ -27,6 +27,7 @@ As described by the problem statement, a fleet of drones are required to communi
  In order to determine if the distance moved by a drone is less than a metre (or if the drone hasn't moved in 10 seconds), the distance between a drone's current and previous coordinates had to be calculated. This calculation was done on the web client since this was were the state of the application was handled. The calculation used the great circle distance method which provides the distance between any two points on the earth's surface. The time spent by the drone is calculated by multiplying the distance moved by the drone against its speed.
 
 In the case where a drone has barely moved within 10 seconds, the drone is highlighted with a blue colour on the web dashboard.
+
 ---
 
 ### Methods and Options

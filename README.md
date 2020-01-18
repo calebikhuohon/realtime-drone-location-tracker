@@ -1,4 +1,4 @@
-# realtime dronelocation tracker
+# Realtime Drone Location Tracker
 ---
 
 This project provides an easy-to-use interface for a fleet of drones, parses and renders the data gotten back in a responsive table.
@@ -12,7 +12,8 @@ This system makes the following assumptions
 3. The drone speed and drone location (in latitude and longitude) are sent a part of the data received from the drone and this 
    data is in the form `speed:10;location:51.507351,-0.127758;` .
 4. The drone receives a `location` command and understands the command requires the above data to be sent.
-5. 
+5. The drone reports its current speed in metres/seconds
+
 ---
 
 ### Thought Process Through Which the System was Actualized
@@ -30,7 +31,7 @@ In the case where a drone has barely moved within 10 seconds, the drone is highl
 
 ### Methods and Options
 
-```
+```js
 const {connect} = require('/backend/index.js');
 
 const drone = connect({
@@ -47,5 +48,13 @@ drone.send('location');
 
 // attach a callback to a specific event
 drone.on(event, callback);
+
+/**
+ * All events of the on method
+ * connection - Fired when connected to the drone                  callback()
+ * parsedLocation - Fired when the drone sends its state message.  callback(locationObject, webSocketConnection)
+ * send - Fired when a command is sent.                            callback(error, messageLength)
+ * message - Fired when the drone sends a status message           callback(message, udpConnection)
+ * /
 
 ```
